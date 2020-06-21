@@ -1,0 +1,44 @@
+﻿using System;
+namespace Smith_Kevin_JunIntergrative2
+{
+    public class Validation
+    {
+       public static int Validateint(string s)
+        {
+            Console.WriteLine(s);
+            string response = Console.ReadLine();
+            int i;
+            while (!int.TryParse(response, out i))
+            {
+                Console.WriteLine("Please enter a valid number...");
+                response = Console.ReadLine();
+            }
+            return i;
+        }
+
+        public static decimal ValidateDecimal(string s)
+        {
+            Console.WriteLine(s);
+            string response = Console.ReadLine();
+            decimal i;
+            while (!decimal.TryParse(response, out i))
+            {
+                Console.WriteLine("Please enter a valid number...");
+                response = Console.ReadLine();
+            }
+            return i;
+        }
+
+        public static string ValidateString(string s)
+        {
+            Console.WriteLine(s);
+            string response = Console.ReadLine();
+            while (string.IsNullOrWhiteSpace(response))
+            {
+                Console.WriteLine("Please do not leave this blank...");
+                response = Console.ReadLine();
+            }
+            return response;
+        }
+    }
+}

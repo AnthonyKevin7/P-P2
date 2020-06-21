@@ -1,0 +1,45 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Smith_Kevin_JunIntergrative2
+{
+    public class Menu
+    {
+        public string Title { get; set; }
+        public string MenuTitle { get; set; }
+        private List<string> _items;
+
+        public Menu()
+        {
+            Title = "Visualize Me - A Data Story";
+            MenuTitle = "The Card Game";
+            _items = new List<string>();
+        }
+
+        public Menu(params string[] items)
+        {
+            Title = "Visualize Me - A Data Story";
+            MenuTitle = "The Card Game";
+            _items = items.ToList();
+        }
+
+        public void AddMenuItems(string item)
+        {
+            _items.Add(item);
+        }
+
+        public void Display()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine(Title);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("*-------------------------*");
+            for (int i = 0; i < _items.Count; i++)
+            {
+                Console.WriteLine($"{i +1}: {_items[i]}");
+            }
+        }
+    }
+}

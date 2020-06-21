@@ -1,0 +1,302 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using MySql.Data.MySqlClient;
+
+namespace Smith_Kevin_JunIntergrative2
+{
+    public class Logic
+    {
+        public string _directory = @"../../output/";    // output location of the directory
+        public string _fileName = "Smith_Kevin-JunIntergrative2_ConvertedData.JSON";    // JSON File Name
+
+        // Lists to store data from database tables
+        public List<Location> _restaurant = new List<Location>();
+        public List<Review> _reviews = new List<Review>();
+        public List<Player> _players = new List<Player>();
+
+        Menu myMenu = new Menu();    // Create instance of a menu for selection options
+        public int choice;
+
+        public Logic()
+        {
+
+        }
+
+        public void MainSelection()
+        {
+            // Display the "Mainest" of menus
+            Menu myMenu = new Menu("Convert SQL to JSON", "Search by star ratings", "Animated Bae Graph Display", "Play THE CARD GAME", "Exit");
+            myMenu.Display();
+            Console.WriteLine("___________________________________");
+            choice = Validation.Validateint("Hello Admin, What would you like to do today?");
+
+            switch (choice)
+            {
+                default:
+                    break;
+            }
+        }
+        // TODO: METHODS------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        public void ConvertDatabase()
+        {
+            // Database Location
+            string cs = @"server=127.0.0.1;userid=root;password=root;database=Restraunt;port=8889";
+            // Creating connection object
+            MySqlConnection conn = null;
+
+            try
+            {
+                conn = new MySqlConnection(cs);
+                conn.Open();
+
+                string stm = "SELECT * FROM RestaurantProfiles";
+
+                MySqlCommand cmd = new MySqlCommand(stm, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    string id = rdr["id"].ToString();
+                    string restaurantName = rdr["RestaurantName"].ToString();
+                    string address = rdr["Address"].ToString();
+                    string phone = rdr["Phone"].ToString();
+                    string hoursofop = rdr["HoursOfOperation"].ToString();
+                    string price = rdr["Price"].ToString();
+                    string usacitylac = rdr["USACityLocation"].ToString();
+                    string cuisine = rdr["Cuisine"].ToString();
+                    string foodrate = rdr["FoodRating"].ToString();
+                    string servicerate = rdr["ServiceRating"].ToString();
+                    string ambiencerate = rdr["AmbienceRating"].ToString();
+                    string valuerate = rdr["ValueRating"].ToString();
+                    string overallRating = rdr["OverallRating"].ToString();
+                    string overallPossibleRating = rdr["OverallPossibleRating"].ToString();
+                    _restaurant.Add(new Location(id, restaurantName, address, phone, hoursofop, price, usacitylac, cuisine, foodrate, servicerate, ambiencerate, valuerate, overallRating, overallPossibleRating));
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine("Error: {0}", ex.ToString());
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    conn.Close();
+                }
+            }
+            Console.WriteLine("Connected to restaurant =database...");
+        }
+
+        public void ConvertDatabaseReviews()
+        {
+            // Database Location
+            string cs = @"server=127.0.0.1;userid=root;password=root;database=Restraunt;port=8889";
+            // Creating connection object
+            MySqlConnection conn = null;
+
+            try
+            {
+                conn = new MySqlConnection(cs);
+                conn.Open();
+
+                string stm = "SELECT * FROM RestaurantReviews";
+
+                MySqlCommand cmd = new MySqlCommand(stm, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    string idreview = rdr["id"].ToString();
+                    string restaurantid = rdr["RestaurantId"].ToString();
+                    string reviewscore = rdr["ReviewScore"].ToString();
+                    string possiblereviewscore = rdr["PossibleReviewScore"].ToString();
+                    string reviewtext = rdr["ReviewText"].ToString();
+                    string reviewcolor = rdr["ReviewColor"].ToString();
+
+                    _reviews.Add(new Review(idreview, restaurantid, reviewscore, possiblereviewscore, reviewtext, reviewcolor));
+                }
+            }
+
+            catch (MySqlException ex)
+            {
+                Console.WriteLine("Error: {0}", ex.ToString());
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    conn.Close();
+                }
+            }
+            Console.WriteLine("Connected to reviews database...");
+        }
+
+        public void ConvertDatabaseReviewers()
+        {
+            //Database Location
+            string cs = @"server=127.0.0.1;userid=root;password=root;database=Restraunt;port8889";
+            // Create the connection object
+            MySqlConnection conn = null;
+
+            try
+            {
+                conn = new MySqlConnection(cs);
+                conn.Open();
+
+                string stm = "SELECT * FROM RestaurantReviewers";
+                MySqlCommand cmd = new MySqlCommand(stm, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    string idperson = rdr["id"].ToString();
+                    string username = rdr["Username"].ToString();
+                    string password = rdr["Password"].ToString();
+                    string first = rdr["First"].ToString();
+                    string last = rdr["Last"].ToString();
+                    string age = rdr["Age"].ToString();
+                    string reviewerlocation = rdr["ReviewerLocation"].ToString();
+                    string reviewerrating = rdr["ReviewerRating"].ToString();
+                    _players.Add(new Player(idperson, username, password, first, last, age, reviewerlocation, reviewerrating));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error; {0}", ex.ToString());
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    conn.Close();
+                }
+            }
+            Console.WriteLine("Connected to reviewers database");
+        }
+        public void SaveToJson()
+        {
+            Console.Clear();
+
+            using (StreamWriter sw = new StreamWriter(_directory + _fileName))
+            {
+                sw.WriteLine("[");
+
+                int counter = 0;
+                foreach (Location item in _restaurant)
+                {
+                    sw.WriteLine("{");
+                    sw.WriteLine($"\"id\":\"{item.id}\",");
+                    sw.WriteLine($"\"Restaurant Name\":\"{item.restaurantName}\",");
+                    sw.WriteLine($"\"Address\":\"{item.address}\",");
+                    sw.WriteLine($"\"Phone\":\"{item.phone}\",");
+                    sw.WriteLine($"\"Hours Of Operation\":\"{item.hoursofop}\",");
+                    sw.WriteLine($"\"Price\":\"{item.price}\",");
+                    sw.WriteLine($"\"USA City Location\":\"{item.USAcitylocation}\",");
+                    sw.WriteLine($"\"Cuisine\":\"{item.cuisine}\",");
+                    sw.WriteLine($"\"Food Rating\":{item.foodrating},");
+                    sw.WriteLine($"\"Service Rating\":{item.servicerating},");
+                    sw.WriteLine($"\"Ambience Rating\":{item.ambiencerating},");
+                    sw.WriteLine($"\"Value Rating\":{item.valuerating},");
+                    sw.WriteLine($"\"Overall Rating\":{item.overallrating},");
+                    sw.WriteLine($"\"Overall Possible Rating\":{item.overallpossible},");
+                    if (counter < _restaurant.Count - 1)
+                    {
+                        sw.WriteLine("},");
+                    }
+                    else
+                    {
+                        sw.WriteLine("}");
+                    }
+                    counter++;
+                }
+                sw.WriteLine("]");
+            }
+            Console.WriteLine("JSON Conversion Complete :)");
+        }
+
+        private void CreateJSON()
+        {
+            Console.Clear();
+
+            Directory.CreateDirectory(_directory);
+            if (!File.Exists(_directory + _fileName))
+            {
+                File.Create(_directory + _fileName).Dispose();
+                Console.WriteLine("JSON File Created");
+            }
+            else
+            {
+                Console.WriteLine("The File exists already");
+            }
+        }
+
+        // TODO: Extra METHODS------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        private void Continue()
+        {
+            Console.WriteLine("Press the Return Key to go back to the Main Menu...");
+            Console.ReadKey();
+            myMenu.Display();
+            MainSelection();
+        }
+
+        private void ContinueNoMenu()
+        {
+            Console.WriteLine("Press the Return Key to continue...");
+            Console.ReadKey();
+        }
+
+        private void ExitApp()
+        {
+            Console.Clear();
+            string exit = Validation.ValidateString("Are you sure you want to exit the application? Y or N: ");
+            if (exit == "y" || exit == "Y")
+            {
+                Console.WriteLine("Exiting Application");
+                Console.WriteLine("Have a hearty and wholesome day :)");
+                Environment.Exit(0);
+            }
+            else if (exit == "n" || exit == "N")
+            {
+                Console.WriteLine("Returning back to Main Menu...");
+                Console.ReadKey();
+                myMenu.Display();
+                MainSelection();
+            }
+            else
+            {
+                Console.WriteLine("Please enter Y or N: ");
+                Console.ReadLine();
+                ExitApp();
+            }
+        }
+
+        private void DisplayMenuTitle(string s)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(s + "\n-----------------------------------");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        private void Load()
+        {
+            using StreamReader sr = new StreamReader(_directory + _fileName);
+            {
+                while (sr.Peek() > -1)
+                {
+                    string line = sr.ReadLine();
+                    if (line.Contains("Overall Rating"))
+                    {
+
+                    }
+                }
+            }
+        }
+    }
+}

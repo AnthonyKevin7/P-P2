@@ -1,0 +1,15 @@
+﻿using System;
+
+namespace Smith_Kevin_JunIntergrative2
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Menu myMenu = new Menu("Convert SQL to JSON", "Showcase 5 star rating", "Showcase Animated Bar Graph", "Play The Card Game", "Exit");
+            myMenu.Display();
+            Logic start = new Logic();
+
+        }
+    }
+}
